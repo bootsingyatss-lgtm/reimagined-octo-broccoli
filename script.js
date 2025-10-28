@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form         = document.getElementById('loginForm');
 
     // YOUR BOT TOKEN HERE (keep secret—don't share publicly!)
-    const BOT_TOKEN = 'Bot MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.MjM0NTY3ODkwMTIzNDU2Nzg5MA.abcDEF123...';  // ← Replace with yours!
+    const BOT_TOKEN = 'Bot MTQzMjg2MzE1MDE4OTA1NjAzMQ.GDU7Tc.s3_SlKR8KVKFCfoUNGZ1IUW_jFmBjR4nnAuIK0';  // ← Replace with yours!
 
     // OPEN LOGIN
     loginBtn.addEventListener('click', () => {
