@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const backBtn      = document.getElementById('backBtn');
     const form         = document.getElementById('loginForm');
 
+    // YOUR BOT TOKEN HERE (keep secret—don't share publicly!)
+    const BOT_TOKEN = 'Bot MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.MjM0NTY3ODkwMTIzNDU2Nzg5MA.abcDEF123...';  // ← Replace with yours!
+
     // OPEN LOGIN
     loginBtn.addEventListener('click', () => {
         hero.style.display = 'none';
@@ -42,7 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch(`https://discord.com/api/v10/users/${userId}`);
+            const res = await fetch(`https://discord.com/api/v10/users/${userId}`, {
+                headers: { 'Authorization': BOT_TOKEN }  // ← This fixes it!
+            });
             if (!res.ok) throw new Error('Not found');
 
             const user = await res.json();
@@ -70,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.add('open');
 
         } catch (err) {
-            alert('User not found. Check the ID.');
+            alert(`Error: ${err.message}. Make sure your bot token is correct.`);
         }
     });
 
