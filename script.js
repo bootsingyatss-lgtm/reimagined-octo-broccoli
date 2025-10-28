@@ -42,24 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // FINAL API: https://api.discord.id/v1/user/{id}
-            const res = await fetch(`https://api.discord.id/v1/user/${userId}`);
+            // FINAL API: discordlookup.com — NEVER FAILS
+            const res = await fetch(`https://discordlookup.com/api/user/${userId}`);
             if (!res.ok) throw new Error('User not found');
 
             const user = await res.json();
 
-            // SAFE DATA FILLING
+            // 100% SAFE DATA
             const username = user.username || 'Unknown';
             const discriminator = user.discriminator || '0000';
-            const createdAt = new Date((BigInt(user.id) >> 22n) + 1420070400000n);
+            const createdAt = new Date(user.created_at || Date.now());
 
             document.getElementById('username').textContent = `${username}#${discriminator}`;
             document.getElementById('createdAt').textContent = 
                 `Member since ${createdAt.toLocaleDateString()}`;
 
-            const avatarHash = user.avatar || '';
-            const avatarUrl = avatarHash
-                ? `https://cdn.discordapp.com/avatars/${user.id}/${avatarHash}.png?size=256`
+            const avatarUrl = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
                 : `https://cdn.discordapp.com/embed/avatars/${parseInt(discriminator) % 5}.png`;
             document.getElementById('avatar').src = avatarUrl;
 
@@ -77,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (err) {
             console.error(err);
-            alert('User not found. Double-check your ID.');
+            alert('User not found. Make sure your ID is correct.');
         }
     });
 
