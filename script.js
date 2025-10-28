@@ -42,22 +42,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch(`https://japi.rest/discord/v1/user/${userId}`);
+            // USE discord.id API — MOST RELIABLE
+            const res = await fetch(`https://discord.id/api/v1/user/${userId}`);
             if (!res.ok) {
-                const error = await res.json().catch(() => ({}));
-                throw new Error(error.message || 'User not found');
+                const err = await res.text();
+                throw new Error('User not found or API error');
             }
-            
+
             const user = await res.json();
 
-            // Fill profile
-            document.getElementById('username').textContent = `${user.username}#${user.discriminator}`;
+            // FILL PROFILE — 100% SAFE
+            document.getElementById('username').textContent = 
+                `${user.global_name || user.username || 'Unknown'}#${user.discriminator || '0000'}`;
+
+            const createdAt = user.created_at ? new Date(user.created_at) : new Date();
             document.getElementById('createdAt').textContent = 
-                `Member since ${new Date(user.created_at).toLocaleDateString()}`;
+                `Member since ${createdAt.toLocaleDateString()}`;
 
             const avatarUrl = user.avatar 
                 ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
-                : `https://cdn.discordapp.com/embed/avatars/${user.discriminator % 5}.png`;
+                : `https://cdn.discordapp.com/embed/avatars/${(user.discriminator || 0) % 5}.png`;
             document.getElementById('avatar').src = avatarUrl;
 
             const bannerEl = document.getElementById('banner');
@@ -67,24 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 bannerEl.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
             }
 
-            // Show profile
+            // SHOW PROFILE
             closeLoginPanel();
             profilePanel.classList.add('open');
             overlay.classList.add('open');
 
         } catch (err) {
-            alert(`Error: ${err.message}. Make sure your User ID is correct.`);
-        }
-    });
-
-    // BACK TO LOGIN
-    backBtn.addEventListener('click', () => {
-        profilePanel.classList.remove('open');
-        overlay.classList.remove('open');
-        setTimeout(() => {
-            hero.style.display = 'block';
-            panels.classList.remove('open');
-            form.reset();
-        }, 300);
-    });
-});
+            console
