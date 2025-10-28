@@ -42,26 +42,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // USE discord.id API — MOST RELIABLE
-            const res = await fetch(`https://discord.id/api/v1/user/${userId}`);
-            if (!res.ok) {
-                const err = await res.text();
-                throw new Error('User not found or API error');
-            }
+            // FINAL API: https://api.discord.id/v1/user/{id}
+            const res = await fetch(`https://api.discord.id/v1/user/${userId}`);
+            if (!res.ok) throw new Error('User not found');
 
             const user = await res.json();
 
-            // FILL PROFILE — 100% SAFE
-            document.getElementById('username').textContent = 
-                `${user.global_name || user.username || 'Unknown'}#${user.discriminator || '0000'}`;
+            // SAFE DATA FILLING
+            const username = user.username || 'Unknown';
+            const discriminator = user.discriminator || '0000';
+            const createdAt = new Date((BigInt(user.id) >> 22n) + 1420070400000n);
 
-            const createdAt = user.created_at ? new Date(user.created_at) : new Date();
+            document.getElementById('username').textContent = `${username}#${discriminator}`;
             document.getElementById('createdAt').textContent = 
                 `Member since ${createdAt.toLocaleDateString()}`;
 
-            const avatarUrl = user.avatar 
-                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
-                : `https://cdn.discordapp.com/embed/avatars/${(user.discriminator || 0) % 5}.png`;
+            const avatarHash = user.avatar || '';
+            const avatarUrl = avatarHash
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${avatarHash}.png?size=256`
+                : `https://cdn.discordapp.com/embed/avatars/${parseInt(discriminator) % 5}.png`;
             document.getElementById('avatar').src = avatarUrl;
 
             const bannerEl = document.getElementById('banner');
@@ -77,4 +76,19 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.classList.add('open');
 
         } catch (err) {
-            console
+            console.error(err);
+            alert('User not found. Double-check your ID.');
+        }
+    });
+
+    // BACK TO LOGIN
+    backBtn.addEventListener('click', () => {
+        profilePanel.classList.remove('open');
+        overlay.classList.remove('open');
+        setTimeout(() => {
+            hero.style.display = 'block';
+            panels.classList.remove('open');
+            form.reset();
+        }, 300);
+    });
+});
